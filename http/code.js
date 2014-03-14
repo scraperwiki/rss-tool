@@ -48,7 +48,7 @@ var pipInstall = function(){
 var showEndpoints = function(){
   $('#loading span').html('Reading RSS endpoint&hellip;')
   $.ajax({
-    url: '../cgi-bin/rss',
+    url: '../cgi-bin/rss/feed.rss',
     dataType: 'xml'
   }).done(function(xmlDom){
     $('#done').show()
