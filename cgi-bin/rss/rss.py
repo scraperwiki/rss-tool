@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 
+import datetime
 import dateutil.parser
 import logging
 import os
@@ -39,6 +40,16 @@ def get_dataset_url():
 
 dataset_url = get_dataset_url()
 
+def log_request(logger):
+    logger.info("REQUEST: {} [{}] \"{} {} {}\" \"{}\"".format(
+        os.environ.get('REMOTE_ADDR', '-').split(':')[0],
+        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S +0000"),
+        os.environ.get('REQUEST_METHOD', '-'),
+        os.environ.get('REQUEST_URI', '-'),
+        os.environ.get('SERVER_PROTOCOL', '-'),
+        os.environ.get('HTTP_USER_AGENT', '-')
+    ))
+
 
 @app.route(api_path + "/feed.rss")
 def show_collections():
@@ -61,6 +72,7 @@ if __name__ == "__main__":
     app.logger.addHandler(hdlr)
 
     try:
+        log_request(logger)
         CGIHandler().run(app)
     except Exception, e:
-        logger.exception("Something went wrong")
+        logger.exception("EXCEPTION:")
