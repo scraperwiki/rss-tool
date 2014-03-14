@@ -1,0 +1,22 @@
+body {
+  margin: 0 auto;
+  padding: 0;
+  width: 400px;
+}
+
+#done, #error {
+  display: none;
+}
+
+#loading, #error {
+  margin-top: 50px;
+  text-align: center;
+}
+
+#loading p, #error p {
+  margin: 15px 0;
+}
+
+#done {
+  padding: 30px 0 40px 0;
+}
