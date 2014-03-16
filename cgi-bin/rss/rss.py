@@ -71,7 +71,7 @@ def show_collections():
         )
     else:
         resp.status_code = 404
-        resp.data = 'You must supply a "table" parameter in your query string'
+        resp.data = 'You must supply either a "table" parameter or a "query" parameter in your query string'
 
     return resp
 
