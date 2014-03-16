@@ -31,3 +31,9 @@ class CgiTestCase(unittest.TestCase):
         response = self.app.get('/toolid/token/cgi-bin/rss/feed.rss')
         assert_equal(response.status_code, 404)
         assert_in(response.data, 'You must supply a "table" parameter in your query string')
+
+    def test_feed_returns_valid_xml_if_custom_sql_query_provided(self):
+        response = self.app.get('/toolid/token/cgi-bin/rss/feed.rss?query=select+*+from+example')
+        dom = lxml.html.fromstring(response.data)
+        assert_equal(response.status_code, 200)
+        assert_equal(len(dom.cssselect('channel')), 1)

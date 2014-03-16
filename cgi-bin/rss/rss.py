@@ -62,6 +62,13 @@ def show_collections():
             api_server=api_server,
             api_path=api_path
         )
+    elif 'query' in request.args:
+        resp.headers[b'Content-Type'] = b'application/rss+xml;charset=utf-8'
+        resp.data = render_template(
+            'feed.xml',
+            api_server=api_server,
+            api_path=api_path
+        )
     else:
         resp.status_code = 404
         resp.data = 'You must supply a "table" parameter in your query string'
