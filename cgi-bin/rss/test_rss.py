@@ -22,6 +22,12 @@ class CgiTestCase(unittest.TestCase):
         self.app = rss.app.test_client()
 
     def test_feed_returns_valid_xml(self):
-        response = self.app.get('/toolid/token/cgi-bin/rss/feed.rss')
+        response = self.app.get('/toolid/token/cgi-bin/rss/feed.rss?table=example')
         dom = lxml.html.fromstring(response.data)
+        assert_equal(response.status_code, 200)
         assert_equal(len(dom.cssselect('channel')), 1)
+
+    def test_feed_returns_error_if_missing_table_parameter(self):
+        response = self.app.get('/toolid/token/cgi-bin/rss/feed.rss')
+        assert_equal(response.status_code, 404)
+        assert_in(response.data, 'You must supply a "table" parameter in your query string')
