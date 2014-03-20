@@ -64,3 +64,69 @@ class ExecutingQueries(unittest.TestCase):
         results = rss.get_results(url, query)
         print type(results)
         assert isinstance(results, list)
+
+
+class GeneratingQueries(unittest.TestCase):
+
+    def test_default_column_names(self):
+        args = {
+            "table": "my_table"
+        }
+        expected = 'SELECT "title", "link", "description", "guid", "pubDate" FROM "my_table" ORDER BY "rowid" DESC LIMIT 100'
+        query = rss.get_query_from_request_args(args)
+        assert_equal(query, expected)
+
+    def test_custom_column_names(self):
+        args = {
+            "table": "my_table",
+            "title": "a",
+            "link": "b",
+            "description": "c",
+            "guid": "d",
+            "pubDate": "e"
+        }
+        expected = 'SELECT "a", "b", "c", "d", "e" FROM "my_table" ORDER BY "rowid" DESC LIMIT 100'
+        query = rss.get_query_from_request_args(args)
+        assert_equal(query, expected)
+
+    def test_partial_custom_column_names(self):
+        args = {
+            "table": "my_table",
+            "title": "a",
+            "link": "b"
+        }
+        expected = 'SELECT "a", "b", "description", "guid", "pubDate" FROM "my_table" ORDER BY "rowid" DESC LIMIT 100'
+        query = rss.get_query_from_request_args(args)
+        assert_equal(query, expected)
+
+    def test_custom_query(self):
+        args = {
+            "query": "select foo, bar from baz"
+        }
+        expected = 'select foo, bar from baz'
+        query = rss.get_query_from_request_args(args)
+        assert_equal(query, expected)
+
+    def test_no_request_args(self):
+        args = {}
+        expected = None
+        query = rss.get_query_from_request_args(args)
+        assert_equal(query, expected)
+
+    def test_sqlite_escaped_custom_column_names(self):
+        args = {
+            "table": "my_table",
+            "title": 'quote"mark'
+        }
+        expected = 'SELECT "quote""mark", "link", "description", "guid", "pubDate" FROM "my_table" ORDER BY "rowid" DESC LIMIT 100'
+        query = rss.get_query_from_request_args(args)
+        assert_equal(query, expected)
+
+    def test_sqlite_escaped_table_name(self):
+        args = {
+            "table": 'my"table'
+        }
+        expected = 'SELECT "title", "link", "description", "guid", "pubDate" FROM "my""table" ORDER BY "rowid" DESC LIMIT 100'
+        query = rss.get_query_from_request_args(args)
+        assert_equal(query, expected)
+

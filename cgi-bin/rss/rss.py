@@ -55,26 +55,49 @@ def log_request(logger):
 @app.route(api_path + "/feed.rss")
 def show_collections():
     resp = Response()
-
-    if 'table' in request.args:
+    query = get_query_from_request_args(request.args)
+    if query:
+        results = get_results(dataset_url, query)
         resp.headers[b'Content-Type'] = b'application/rss+xml;charset=utf-8'
         resp.data = render_template(
             'feed.xml',
             api_server=api_server,
-            api_path=api_path
-        )
-    elif 'query' in request.args:
-        resp.headers[b'Content-Type'] = b'application/rss+xml;charset=utf-8'
-        resp.data = render_template(
-            'feed.xml',
-            api_server=api_server,
-            api_path=api_path
+            api_path=api_path,
+            results=results
         )
     else:
         resp.status_code = 404
         resp.data = 'You must supply either a "table" parameter or a "query" parameter in your query string'
 
     return resp
+
+
+def get_query_from_request_args(args):
+    if 'table' in args:
+        table = sqlite_escape(args['table'])
+        title = 'title'
+        link = 'link'
+        description = 'description'
+        guid = 'guid'
+        pubDate = 'pubDate'
+
+        if 'title' in args:
+            title = sqlite_escape(args['title'])
+        if 'link' in args:
+            link = sqlite_escape(args['link'])
+        if 'description' in args:
+            description = sqlite_escape(args['description'])
+        if 'guid' in args:
+            guid = sqlite_escape(args['guid'])
+        if 'pubDate' in args:
+            pubDate = sqlite_escape(args['pubDate'])
+
+        query = 'SELECT "{}", "{}", "{}", "{}", "{}" FROM "{}" ORDER BY "rowid" DESC LIMIT 100'.format(title, link, description, guid, pubDate, table)
+        return query
+    if 'query' in args:
+        return args['query']
+    else:
+        return None
 
 
 def get_results(url, query):
@@ -89,6 +112,10 @@ def get_results(url, query):
         return rows
     else:
         return []
+
+
+def sqlite_escape(string):
+    return re.sub(r'"', '""', string)
 
 
 if __name__ == "__main__":
