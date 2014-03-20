@@ -9,6 +9,7 @@ import logging
 import os
 import re
 import requests
+import simplejson
 
 from flask import Flask, Response, render_template, request
 from logging import FileHandler
@@ -74,6 +75,20 @@ def show_collections():
         resp.data = 'You must supply either a "table" parameter or a "query" parameter in your query string'
 
     return resp
+
+
+def get_results(url, query):
+    try:
+        rows = requests.get(url, params={'q': query}).json()
+    except requests.exceptions.RequestException:
+        return []
+    except simplejson.JSONDecodeError:
+        return []
+
+    if isinstance(rows, list):
+        return rows
+    else:
+        return []
 
 
 if __name__ == "__main__":
