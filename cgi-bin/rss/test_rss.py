@@ -47,19 +47,19 @@ class ExecutingQueries(unittest.TestCase):
 
     @raises(TypeError)
     def test_get_results_raises_exception_if_query_is_omitted(self):
-        url = 'https://server.scraperwiki.com/datasetid/token/sql'
+        url = 'https://server.scraperwiki.com/datasetid/token'
         rss.get_results(url)
 
     @mock.patch('requests.get')
     def test_get_results_calls_sql_endpoint(self, requests_get):
-        url = 'https://server.scraperwiki.com/datasetid/token/sql'
+        url = 'https://server.scraperwiki.com/datasetid/token'
         query = 'select * from my_table limit 100'
         results = rss.get_results(url, query)
         assert requests_get.called
-        requests_get.assert_called_with(url, params={"q": query})
+        requests_get.assert_called_with(url + '/sql', params={"q": query})
 
     def test_get_results_returns_a_list(self):
-        url = 'https://server.scraperwiki.com/datasetid/token/sql'
+        url = 'https://server.scraperwiki.com/datasetid/token'
         query = 'select * from my_table limit 100'
         results = rss.get_results(url, query)
         print type(results)
@@ -72,7 +72,7 @@ class GeneratingQueries(unittest.TestCase):
         args = {
             "table": "my_table"
         }
-        expected = 'SELECT "title", "link", "description", "guid", "pubDate" FROM "my_table" ORDER BY "rowid" DESC LIMIT 100'
+        expected = 'SELECT title, link, description, guid, pubDate FROM "my_table" ORDER BY rowid DESC LIMIT 100'
         query = rss.get_query_from_request_args(args)
         assert_equal(query, expected)
 
@@ -85,7 +85,7 @@ class GeneratingQueries(unittest.TestCase):
             "guid": "d",
             "pubDate": "e"
         }
-        expected = 'SELECT "a", "b", "c", "d", "e" FROM "my_table" ORDER BY "rowid" DESC LIMIT 100'
+        expected = 'SELECT "a" as title, "b" as link, "c" as description, "d" as guid, "e" as pubDate FROM "my_table" ORDER BY rowid DESC LIMIT 100'
         query = rss.get_query_from_request_args(args)
         assert_equal(query, expected)
 
@@ -95,7 +95,7 @@ class GeneratingQueries(unittest.TestCase):
             "title": "a",
             "link": "b"
         }
-        expected = 'SELECT "a", "b", "description", "guid", "pubDate" FROM "my_table" ORDER BY "rowid" DESC LIMIT 100'
+        expected = 'SELECT "a" as title, "b" as link, description, guid, pubDate FROM "my_table" ORDER BY rowid DESC LIMIT 100'
         query = rss.get_query_from_request_args(args)
         assert_equal(query, expected)
 
@@ -118,7 +118,7 @@ class GeneratingQueries(unittest.TestCase):
             "table": "my_table",
             "title": 'quote"mark'
         }
-        expected = 'SELECT "quote""mark", "link", "description", "guid", "pubDate" FROM "my_table" ORDER BY "rowid" DESC LIMIT 100'
+        expected = 'SELECT "quote""mark" as title, link, description, guid, pubDate FROM "my_table" ORDER BY rowid DESC LIMIT 100'
         query = rss.get_query_from_request_args(args)
         assert_equal(query, expected)
 
@@ -126,7 +126,7 @@ class GeneratingQueries(unittest.TestCase):
         args = {
             "table": 'my"table'
         }
-        expected = 'SELECT "title", "link", "description", "guid", "pubDate" FROM "my""table" ORDER BY "rowid" DESC LIMIT 100'
+        expected = 'SELECT title, link, description, guid, pubDate FROM "my""table" ORDER BY rowid DESC LIMIT 100'
         query = rss.get_query_from_request_args(args)
         assert_equal(query, expected)
 

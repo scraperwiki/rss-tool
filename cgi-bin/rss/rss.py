@@ -10,6 +10,7 @@ import os
 import re
 import requests
 import simplejson
+from email.Utils import formatdate
 
 from flask import Flask, Response, render_template, request
 from logging import FileHandler
@@ -57,14 +58,21 @@ def show_collections():
     resp = Response()
     query = get_query_from_request_args(request.args)
     if query:
+        time = formatdate()
         results = get_results(dataset_url, query)
-        resp.headers[b'Content-Type'] = b'application/rss+xml;charset=utf-8'
-        resp.data = render_template(
-            'feed.xml',
-            api_server=api_server,
-            api_path=api_path,
-            results=results
-        )
+        if len(results):
+            resp.headers[b'Content-Type'] = b'application/rss+xml;charset=utf-8'
+            resp.data = render_template(
+                'feed.xml',
+                api_server=api_server,
+                api_path=api_path,
+                query=query,
+                results=results,
+                time=time
+            )
+        else:
+            resp.status_code = 404
+            resp.data = 'Your query did not retrieve any records.'
     else:
         resp.status_code = 404
         resp.data = 'You must supply either a "table" parameter or a "query" parameter in your query string'
@@ -82,17 +90,17 @@ def get_query_from_request_args(args):
         pubDate = 'pubDate'
 
         if 'title' in args:
-            title = sqlite_escape(args['title'])
+            title = '"{}" as title'.format(sqlite_escape(args['title']))
         if 'link' in args:
-            link = sqlite_escape(args['link'])
+            link = '"{}" as link'.format(sqlite_escape(args['link']))
         if 'description' in args:
-            description = sqlite_escape(args['description'])
+            description = '"{}" as description'.format(sqlite_escape(args['description']))
         if 'guid' in args:
-            guid = sqlite_escape(args['guid'])
+            guid = '"{}" as guid'.format(sqlite_escape(args['guid']))
         if 'pubDate' in args:
-            pubDate = sqlite_escape(args['pubDate'])
+            pubDate = '"{}" as pubDate'.format(sqlite_escape(args['pubDate']))
 
-        query = 'SELECT "{}", "{}", "{}", "{}", "{}" FROM "{}" ORDER BY "rowid" DESC LIMIT 100'.format(title, link, description, guid, pubDate, table)
+        query = 'SELECT {}, {}, {}, {}, {} FROM "{}" ORDER BY rowid DESC LIMIT 100'.format(title, link, description, guid, pubDate, table)
         return query
     if 'query' in args:
         return args['query']
@@ -102,7 +110,11 @@ def get_query_from_request_args(args):
 
 def get_results(url, query):
     try:
-        rows = requests.get(url, params={'q': query}).json()
+        resp = requests.get(
+            "{}/sql".format(url),
+            params={'q': query}
+        )
+        rows = resp.json()
     except requests.exceptions.RequestException:
         return []
     except simplejson.JSONDecodeError:
