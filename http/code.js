@@ -46,7 +46,7 @@ var pipInstall = function(){
 }
 
 var showEndpoints = function(){
-  $('#loading span').html('Reading RSS endpoint&hellip;')
+  $('#loading p').html('Reading RSS endpoint&hellip;')
   $.ajax({
     url: '../cgi-bin/rss/feed.rss',
     dataType: 'xml'
@@ -55,7 +55,7 @@ var showEndpoints = function(){
     $('#loading').hide()
     console.log(xmlDom)
   }).fail(function(jqXHR){
-      $('#error').show().children('span').html('RSS endpoint failed to respond:<br/>' + jqXHR.status + ' ' + jqXHR.statusText)
+      $('#error').show().children('p').html('RSS endpoint failed to respond:<br/>' + jqXHR.status + ' ' + jqXHR.statusText)
       $('#loading').hide()
   })
 }
@@ -63,12 +63,12 @@ var showEndpoints = function(){
 $(function(){
   readUrl().done(function(currentUrl){
     if($.trim(currentUrl) == ''){
-      $('#loading span').html('Installing RSS endpoint&hellip;')
+      $('#loading p').html('Installing RSS endpoint&hellip;')
       $.when(saveUrl(), pipInstall()).then(function(){
         showEndpoints()
       }, function(errorMessage, errorDetails){
         console.log(errorDetails)
-        $('#error').show().children('span').text('RSS installation failed:<br/>' + errorMessage)
+        $('#error').show().children('p').text('RSS installation failed:<br/>' + errorMessage)
         $('#loading').hide()
       })
     } else {
