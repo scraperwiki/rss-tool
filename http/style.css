@@ -17,6 +17,38 @@ body {
   margin: 15px 0;
 }
 
-#done {
+#settings {
+  display: none;
   padding: 30px 0 40px 0;
+}
+
+#help {
+  background: #FFEBC8;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  padding: 20px;
+}
+
+#help h1 {
+  font-size: 32px;
+  line-height: 38px;
+}
+
+#url {
+  width: 380px;
+  margin-bottom: 30px;
+}
+
+ul.nav {
+  text-align: center;
+}
+
+ul.nav > li {
+  float: none;
+  display: inline-block;
+}
+
+#custom {
+  display: none;
 }

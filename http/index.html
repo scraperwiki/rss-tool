@@ -22,8 +22,45 @@
         <p>An unexpected error occurred.</p>
         <a href="log.txt" target="_blank" class="btn btn-mini">Show error log</a>
     </div>
-    <div id="done">
-        <p>Installed! Supposedly.</p>
+    <div id="settings">
+        <h1>This dataset is being published with RSS.</h1>
+        <input type="text" id="url">
+        <ul class="nav nav-pills">
+          <li class="active"><a href="#wizard">Source settings</a></li>
+          <li><a href="#custom">Custom SQL</a></li>
+        </ul>
+        <div id="wizard" class="tab">
+          <p>
+            <label for="table">Table to publish</label>
+            <select id="table"></select>
+          </p>
+          <p>
+            <label for="title">Title column</label>
+            <select id="title"></select>
+          </p>
+          <p>
+            <label for="description">Description column</label>
+            <select id="description"></select>
+          </p>
+          <p>
+            <label for="link">Link column</label>
+            <select id="link"></select>
+          </p>
+          <p>
+            <label for="guid">GUID column</label>
+            <select id="guid"></select>
+          </p>
+          <p>
+            <label for="pubDate">pubDate column</label>
+            <select id="pubDate"></select>
+          </p>
+        </div>
+        <div id="custom" class="tab">
+          <p>
+            <label for="query">Custom query</label>
+            <textarea id="query" placeholder="SELECT foo as title,… FROM my_table LIMIT 100"></textarea>
+          </p>
+        </div>
     </div>
 </body>
 </html>

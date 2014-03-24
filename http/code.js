@@ -45,19 +45,10 @@ var pipInstall = function(){
   return dfd.promise()
 }
 
-var showEndpoints = function(){
-  $('#loading p').html('Reading RSS endpoint&hellip;')
-  $.ajax({
-    url: '../cgi-bin/rss/feed.rss',
-    dataType: 'xml'
-  }).done(function(xmlDom){
-    $('#done').show()
-    $('#loading').hide()
-    console.log(xmlDom)
-  }).fail(function(jqXHR){
-      $('#error').show().children('p').html('RSS endpoint failed to respond:<br/>' + jqXHR.status + ' ' + jqXHR.statusText)
-      $('#loading').hide()
-  })
+var showConfig = function(){
+  $('#settings').show()
+  $('#loading').hide()
+  $('#url').val(scraperwiki.readSettings().source.url + '/cgi-bin/rss/feed.rss')
 }
 
 $(function(){
@@ -65,14 +56,26 @@ $(function(){
     if($.trim(currentUrl) == ''){
       $('#loading p').html('Installing RSS endpoint&hellip;')
       $.when(saveUrl(), pipInstall()).then(function(){
-        showEndpoints()
+        showConfig()
       }, function(errorMessage, errorDetails){
         console.log(errorDetails)
         $('#error').show().children('p').text('RSS installation failed:<br/>' + errorMessage)
         $('#loading').hide()
       })
     } else {
-      showEndpoints()
+      showConfig()
     }
+  })
+  $(document).on('focus', '#url', function(e){
+    e.preventDefault()
+    this.select()
+  }).on('mouseup', '#url', function(e){
+    e.preventDefault()
+  })
+  $('.nav li').on('click', function(e){
+    e.preventDefault()
+    $(this).parent().addClass('active').siblings('.active').removeClass('active')
+    var target = $(this).attr('href')
+    $(target).show().siblings('.tab').hide()
   })
 })
