@@ -72,7 +72,7 @@ $(function(){
   }).on('mouseup', '#url', function(e){
     e.preventDefault()
   })
-  $('.nav li').on('click', function(e){
+  $('.nav li a').on('click', function(e){
     e.preventDefault()
     $(this).parent().addClass('active').siblings('.active').removeClass('active')
     var target = $(this).attr('href')

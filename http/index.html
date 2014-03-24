@@ -23,34 +23,33 @@
         <a href="log.txt" target="_blank" class="btn btn-mini">Show error log</a>
     </div>
     <div id="settings">
-        <h1>This dataset is being published with RSS.</h1>
-        <input type="text" id="url">
-        <ul class="nav nav-pills">
-          <li class="active"><a href="#wizard">Source settings</a></li>
-          <li><a href="#custom">Custom SQL</a></li>
+        <h1>Access your dataset over RSS.</h1>
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#wizard">Specify columns</a></li>
+          <li><a href="#custom">Use a custom SQL query</a></li>
         </ul>
         <div id="wizard" class="tab">
-          <p>
+          <p class="left">
             <label for="table">Table to publish</label>
             <select id="table"></select>
           </p>
-          <p>
+          <p class="right">
             <label for="title">Title column</label>
             <select id="title"></select>
           </p>
-          <p>
+          <p class="left">
             <label for="description">Description column</label>
             <select id="description"></select>
           </p>
-          <p>
+          <p class="right">
             <label for="link">Link column</label>
             <select id="link"></select>
           </p>
-          <p>
+          <p class="left">
             <label for="guid">GUID column</label>
             <select id="guid"></select>
           </p>
-          <p>
+          <p class="right">
             <label for="pubDate">pubDate column</label>
             <select id="pubDate"></select>
           </p>
@@ -61,6 +60,8 @@
             <textarea id="query" placeholder="SELECT foo as title,… FROM my_table LIMIT 100"></textarea>
           </p>
         </div>
+        <label for="url">And then use this URL:</label>
+        <input type="text" id="url">
     </div>
 </body>
 </html>
