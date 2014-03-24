@@ -51,7 +51,34 @@ var showConfig = function(){
   $('#url').val(scraperwiki.readSettings().source.url + '/cgi-bin/rss/feed.rss')
 }
 
+var populateTableDropdown = function(){
+  scraperwiki.dataset.sql.meta().done(function(meta){
+    $.each(meta.table, function(tableName, _info){
+      $('#table').append('<option>' + tableName + '</option>')
+    })
+    refreshColumnDropdowns()
+  })
+}
+
+var refreshColumnDropdowns = function(){
+  var $selects = $('#wizard select').not('#table')
+  $selects.empty()
+  scraperwiki.dataset.sql.meta().done(function(meta){
+    var selectedTableName = $('#table').val()
+    $.each(meta.table, function(tableName, info){
+      if(tableName === selectedTableName){
+        $.each(info.columnNames, function(){
+          $selects.append('<option>' + this + '</option>')
+        })
+      }
+    })
+  })
+}
+
+
 $(function(){
+
+  populateTableDropdown()
   readUrl().done(function(currentUrl){
     if($.trim(currentUrl) == ''){
       $('#loading p').html('Installing RSS endpoint&hellip;')
@@ -66,16 +93,21 @@ $(function(){
       showConfig()
     }
   })
+
   $(document).on('focus', '#url', function(e){
     e.preventDefault()
     this.select()
   }).on('mouseup', '#url', function(e){
     e.preventDefault()
   })
+
   $('.nav li a').on('click', function(e){
     e.preventDefault()
     $(this).parent().addClass('active').siblings('.active').removeClass('active')
     var target = $(this).attr('href')
     $(target).show().siblings('.tab').hide()
   })
+
+  $('#table').on('change', refreshColumnDropdowns)
+
 })
